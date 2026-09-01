@@ -31,8 +31,8 @@ tfidf = joblib.load(
     "tfidf_vectorizer.pkl"
 )
 
-cosine_sim = joblib.load(
-    "recommendation_model.pkl"
+tfidf_matrix = joblib.load(
+    "tfidf_matrix.pkl"
 )
 
 
