@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import joblib
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 # --------------------------------
@@ -18,22 +19,15 @@ st.set_page_config(
 # Load Dataset
 # --------------------------------
 
-df = pd.read_csv(
-    "netflix_movies_cleaned.csv"
-)
+df = pd.read_csv("netflix_movies_cleaned.csv")
 
 
 # --------------------------------
 # Load ML Objects
 # --------------------------------
 
-tfidf = joblib.load(
-    "tfidf_vectorizer.pkl"
-)
-
-tfidf_matrix = joblib.load(
-    "tfidf_matrix.pkl"
-)
+tfidf = joblib.load("tfidf_vectorizer.pkl")
+tfidf_matrix = joblib.load("tfidf_matrix.pkl")
 
 
 # --------------------------------
@@ -49,10 +43,8 @@ movie_indices = pd.Series(
 # --------------------------------
 # Recommendation Function
 # --------------------------------
-def recommend_movies(
-    movie_title,
-    num_recommendations
-):
+
+def recommend_movies(movie_title, num_recommendations):
 
     idx = movie_indices[movie_title]
 
@@ -80,34 +72,24 @@ def recommend_movies(
     for movie_index, score in similar_movies:
 
         result.append({
-
             "Movie": df.iloc[movie_index]["Title"],
-
             "Genre": df.iloc[movie_index]["Genre"],
-
             "Director": df.iloc[movie_index]["Director"],
-
             "Cast": df.iloc[movie_index]["Cast"],
-
             "Country": df.iloc[movie_index]["Country"],
-
             "Language": df.iloc[movie_index]["Language"],
-
             "Rating": df.iloc[movie_index]["Rating"],
-
             "Similarity": round(float(score), 3)
-
         })
 
     return pd.DataFrame(result)
+
 
 # --------------------------------
 # Title
 # --------------------------------
 
-st.title(
-    "🎬 Netflix Movie Recommendation System"
-)
+st.title("🎬 Netflix Movie Recommendation System")
 
 st.write(
     "Find movies similar to your favorite movie."
@@ -118,9 +100,7 @@ st.write(
 # Sidebar
 # --------------------------------
 
-st.sidebar.header(
-    "Recommendation Settings"
-)
+st.sidebar.header("Recommendation Settings")
 
 num_recommendations = st.sidebar.slider(
     "Number of Recommendations",
@@ -144,18 +124,14 @@ movie_title = st.selectbox(
 # Recommendation Button
 # --------------------------------
 
-if st.button(
-    "🔍 Recommend Movies"
-):
+if st.button("🔍 Recommend Movies"):
 
     recommendations = recommend_movies(
         movie_title,
         num_recommendations
     )
 
-    st.subheader(
-        "🎥 Recommended Movies"
-    )
+    st.subheader("🎥 Recommended Movies")
 
     for _, movie in recommendations.iterrows():
 
@@ -163,33 +139,14 @@ if st.button(
             f"### 🎬 {movie['Movie']}"
         )
 
+        st.write(f"**Genre:** {movie['Genre']}")
+        st.write(f"**Director:** {movie['Director']}")
+        st.write(f"**Cast:** {movie['Cast']}")
+        st.write(f"**Country:** {movie['Country']}")
+        st.write(f"**Language:** {movie['Language']}")
+        st.write(f"**Rating:** {movie['Rating']}")
         st.write(
-            f"**Genre:** {movie['Genre']}"
-        )
-
-        st.write(
-            f"**Director:** {movie['Director']}"
-        )
-
-        st.write(
-            f"**Cast:** {movie['Cast']}"
-        )
-
-        st.write(
-            f"**Country:** {movie['Country']}"
-        )
-
-        st.write(
-            f"**Language:** {movie['Language']}"
-        )
-
-        st.write(
-            f"**Rating:** {movie['Rating']}"
-        )
-
-        st.write(
-            f"**Similarity Score:** "
-            f"{movie['Similarity']}"
+            f"**Similarity Score:** {movie['Similarity']}"
         )
 
         st.divider()
