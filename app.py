@@ -49,7 +49,6 @@ movie_indices = pd.Series(
 # --------------------------------
 # Recommendation Function
 # --------------------------------
-
 def recommend_movies(
     movie_title,
     num_recommendations
@@ -57,23 +56,28 @@ def recommend_movies(
 
     idx = movie_indices[movie_title]
 
-    similarity_scores = list(
-        enumerate(cosine_sim[idx])
+    similarity_scores = cosine_similarity(
+        tfidf_matrix[idx],
+        tfidf_matrix
+    ).flatten()
+
+    similar_movies = list(
+        enumerate(similarity_scores)
     )
 
-    similarity_scores = sorted(
-        similarity_scores,
+    similar_movies = sorted(
+        similar_movies,
         key=lambda x: x[1],
         reverse=True
     )
 
-    similarity_scores = similarity_scores[
+    similar_movies = similar_movies[
         1:num_recommendations + 1
     ]
 
     result = []
 
-    for movie_index, score in similarity_scores:
+    for movie_index, score in similar_movies:
 
         result.append({
 
@@ -91,12 +95,11 @@ def recommend_movies(
 
             "Rating": df.iloc[movie_index]["Rating"],
 
-            "Similarity": round(score, 3)
+            "Similarity": round(float(score), 3)
 
         })
 
     return pd.DataFrame(result)
-
 
 # --------------------------------
 # Title
